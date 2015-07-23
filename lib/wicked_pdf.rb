@@ -315,14 +315,17 @@ class WickedPdf
       r += make_options(options, [:book,
                                   :default_header,
                                   :disable_javascript,
+                                  :enable_javascript,
                                   :enable_plugins,
+                                  :no_stop_slow_scripts,
                                   :disable_internal_links,
                                   :disable_external_links,
+                                  "enable-toc-back-links",
                                   :print_media_type,
                                   :disable_smart_shrinking,
                                   :use_xserver,
                                   :no_background], '', :boolean)
-      r += make_options(options, [:no_stop_slow_scripts], '', nil)
+      r += make_options(options, ["load-error-handling", "load-media-error-handling"], '', :name_value)
     end
     r
   end
