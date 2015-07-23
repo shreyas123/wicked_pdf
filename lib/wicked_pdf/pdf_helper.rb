@@ -58,7 +58,7 @@ module PdfHelper
     render_opts = { :template => options[:template], :layout => options[:layout], :formats => options[:formats], :handlers => options[:handlers] }
     render_opts.merge!(:locals => options[:locals]) if options[:locals]
     render_opts.merge!(:file => options[:file]) if options[:file]
-    html_string = render_to_string(render_opts)
+    html_string = translate_paths(render_to_string(render_opts))
     options = prerender_header_and_footer(options)
     w = WickedPdf.new(options[:wkhtmltopdf])
     w.pdf_from_string(html_string, options)
@@ -92,11 +92,16 @@ module PdfHelper
         render_opts = { :template => options[hf][:html][:template], :layout => options[hf][:html][:layout], :formats => options[hf][:html][:formats], :handlers => options[hf][:html][:handlers] }
         render_opts.merge!(:locals => options[hf][:html][:locals]) if options[hf][:html][:locals]
         render_opts.merge!(:file => options[hf][:html][:file]) if options[:file]
-        tf.write render_to_string(render_opts)
+        tf.write translate_paths(render_to_string(render_opts))
         tf.flush
         options[hf][:html][:url] = "file:///#{tf.path}"
       end
     end
     options
+  end
+
+  def translate_paths(p)
+    root = "#{request.env['rack.url_scheme']}://#{request.env['HTTP_HOST']}/"
+    p.gsub(/(href|src)=(['"])\/([^\"']*|[^"']*)['"]/, '\1=\2' + root + '\3\2')
   end
 end
